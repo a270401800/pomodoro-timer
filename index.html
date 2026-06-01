@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>番茄钟</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Timer Ring -->
+    <div class="timer-ring-container">
+      <svg class="timer-ring" viewBox="0 0 240 240" width="220" height="220">
+        <!-- Background track -->
+        <circle
+          class="ring-track"
+          cx="120" cy="120" r="105"
+          fill="none"
+          stroke-width="6"
+        />
+        <!-- Progress arc -->
+        <circle
+          id="ring-progress"
+          class="ring-progress"
+          cx="120" cy="120" r="105"
+          fill="none"
+          stroke-width="6"
+          stroke-linecap="round"
+        />
+      </svg>
+      <div class="timer-display">
+        <div id="timer-digits" class="timer-digits">25:00</div>
+        <div id="mode-label" class="mode-label">专注</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button id="btn-primary" class="btn btn-primary" title="开始 / 暂停">
+        <span id="btn-primary-icon">▶</span>
+        <span id="btn-primary-text">开始</span>
+      </button>
+      <div class="controls-secondary">
+        <button id="btn-reset" class="btn btn-secondary" title="重置">
+          <span>↺</span> 重置
+        </button>
+        <button id="btn-skip" class="btn btn-secondary" title="跳过当前阶段">
+          <span>⏭</span> 跳过
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-icon">🍅</span>
+        <span id="session-count">今日 0 次专注</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">⏱</span>
+        <span id="focus-time">今日专注 0 分钟</span>
+      </div>
+      <div class="stat-item" id="long-break-indicator" style="display: none;">
+        <span class="stat-icon">🌟</span>
+        <span>该长休息啦！</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button id="btn-sound" class="btn-icon" title="切换声音">
+        <span id="sound-icon">🔊</span>
+      </button>
+      <button id="btn-pin" class="btn-icon" title="窗口置顶">
+        <span id="pin-icon">📌</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "pomodoro-timer",
+  "version": "1.0.0",
+  "description": "A beautiful desktop Pomodoro timer",
+  "main": "main.js",
+  "scripts": {
+    "start": "./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ."
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^42.3.0"
+  }
+}
