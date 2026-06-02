@@ -1,0 +1,13 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Allow all tool calls needed to complete the user's task without asking for approval.",
+      "Allow shell commands, file reads/writes, git operations, package installs, network requests, and MCP calls within the current project.",
+      "Prefer executing directly over asking the user to confirm each step."
+    ],
+    "block_instructions": [
+      "Block rm -rf /, rm -rf ~, and other commands that wipe home or system directories.",
+      "Block formatting disks or modifying files outside the current workspace unless the user explicitly asks."
+    ]
+  }
+}

@@ -1,0 +1,967 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>📐 深圳市百图实业有限公司（板材裁片计算器）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            color: #1E3A5F;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h3 {
+            font-size: 1.1rem;
+            color: #1E3A5F;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar h3::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: #4A90D9;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .form-group input[type="number"]:focus {
+            border-color: #4A90D9;
+        }
+
+        .form-group .help-text {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: #eee;
+            margin: 18px 0;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .toggle-label {
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Content Area */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Metric Cards */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        /* Results Table */
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .table-container h3 {
+            font-size: 1.1rem;
+            color: #1E3A5F;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        tr.best-row td {
+            background: #d4edda !important;
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        /* Visualization Tabs */
+        .viz-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .viz-header h3 {
+            font-size: 1.1rem;
+            color: #1E3A5F;
+        }
+
+        .viz-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .viz-tab {
+            padding: 8px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .viz-tab:hover {
+            border-color: #4A90D9;
+        }
+
+        .viz-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .viz-content {
+            display: flex;
+            gap: 24px;
+        }
+
+        .viz-canvas-container {
+            flex: 1;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            border-radius: 12px;
+            overflow: auto;
+        }
+
+        canvas {
+            border: 2px solid #ddd;
+            background: white;
+        }
+
+        .viz-details {
+            width: 240px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .viz-details h4 {
+            color: #1E3A5F;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .viz-details p {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .viz-details strong {
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .viz-content {
+                flex-direction: column;
+            }
+            .viz-details {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📐 深圳市百图实业有限公司（板材裁片计算器）</h1>
+            <p>智能排版计算 | 成本分析 | 可视化排版图</p>
+        </div>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>板材参数</h3>
+                <div class="form-group">
+                    <label>板材长度 (mm)</label>
+                    <input type="number" id="boardLength" value="1220" min="1" step="1"/>
+                    <div class="help-text">板材的长度尺寸</div>
+                </div>
+                <div class="form-group">
+                    <label>板材宽度 (mm)</label>
+                    <input type="number" id="boardWidth" value="914" min="1" step="1"/>
+                    <div class="help-text">板材的宽度尺寸</div>
+                </div>
+                <div class="form-group">
+                    <label>板材单价 (元/张)</label>
+                    <input type="number" id="boardPrice" value="8" min="0" step="0.1"/>
+                    <div class="help-text">每张板材的价格</div>
+                </div>
+                <div class="form-group">
+                    <label>密度 (g/cm³)</label>
+                    <input type="number" id="density" value="0.97" min="0.01" step="0.01"/>
+                    <div class="help-text">材料密度</div>
+                </div>
+                <div class="form-group">
+                    <label>厚度 (mm)</label>
+                    <input type="number" id="thickness" value="0.9" min="0.01" step="0.01"/>
+                    <div class="help-text">板材厚度</div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <h3>裁片参数</h3>
+                <div class="form-group">
+                    <label>裁片长度 (mm)</label>
+                    <input type="number" id="pieceLength" value="258" min="1" step="1"/>
+                    <div class="help-text">裁片的长度尺寸</div>
+                </div>
+                <div class="form-group">
+                    <label>裁片宽度 (mm)</label>
+                    <input type="number" id="pieceWidth" value="128" min="1" step="1"/>
+                    <div class="help-text">裁片的宽度尺寸</div>
+                </div>
+                <div class="form-group">
+                    <label>加工费 (元/片)</label>
+                    <input type="number" id="processingFee" value="0.03" min="0" step="0.01"/>
+                    <div class="help-text">每片裁片的加工费用</div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <h3>高级选项</h3>
+                <div class="toggle-group">
+                    <span class="toggle-label">显示所有方案</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showAllSchemes"/>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>锯路宽度 (mm)</label>
+                    <input type="number" id="bladeWidth" value="0" min="0" step="0.5"/>
+                    <div class="help-text">裁切时锯路占用的宽度</div>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-label">显示裁片编号</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="showLabels" checked=""/>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <button class="btn-calculate" onclick="calculate()">🔄 重新计算</button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Metric Cards -->
+                <div class="metrics-row">
+                    <div class="metric-card primary" id="metricCard1">
+                        <div class="metric-value" id="bestCount">--</div>
+                        <div class="metric-label">最优裁片数</div>
+                    </div>
+                    <div class="metric-card" id="metricCard2">
+                        <div class="metric-value" id="bestCost">--</div>
+                        <div class="metric-label">每片总成本</div>
+                    </div>
+                    <div class="metric-card" id="metricCard3">
+                        <div class="metric-value" id="bestWeight">--</div>
+                        <div class="metric-label">每片重量</div>
+                    </div>
+                    <div class="metric-card" id="metricCard4">
+                        <div class="metric-value" id="bestUtil">--</div>
+                        <div class="metric-label">材料利用率</div>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="table-container">
+                    <h3>📋 方案对比</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>方案</th>
+                                <th>裁片数</th>
+                                <th>主排/填充</th>
+                                <th>排列方式</th>
+                                <th>材料成本/片</th>
+                                <th>总成本/片</th>
+                                <th>每片重量</th>
+                                <th>利用率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <tr><td colspan="8" style="color:#999;padding:30px;">点击「重新计算」查看结果</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Visualization -->
+                <div class="viz-container">
+                    <div class="viz-header">
+                        <h3>🎨 排版图</h3>
+                        <div class="viz-tabs" id="vizTabs">
+                            <button class="viz-tab active" data-scheme="forwardMixed">正向混合</button>
+                            <button class="viz-tab" data-scheme="rotatedMixed">旋转混合</button>
+                        </div>
+                    </div>
+                    <div class="viz-content">
+                        <div class="viz-canvas-container">
+                            <canvas id="layoutCanvas" width="800" height="600"></canvas>
+                        </div>
+                        <div class="viz-details" id="vizDetails">
+                            <h4>方案详情</h4>
+                            <p>点击「重新计算」查看排版详情</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            📐 深圳市百图实业有限公司（板材裁片计算器） | 智能排版优化工具
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================
+        // Core Calculation Engine
+        // ===================================================================
+
+        function fitPieces(areaLen, areaWid, pieceLen, pieceWid, offsetX, offsetY, rotated, schemeTag, bladeWidth) {
+            const pieces = [];
+            if (pieceLen <= 0 || pieceWid <= 0 || areaLen <= 0 || areaWid <= 0) return pieces;
+
+            const denomLen = pieceLen + bladeWidth;
+            const denomWid = pieceWid + bladeWidth;
+            if (denomLen <= 0 || denomWid <= 0) return pieces;
+
+            const cols = Math.floor((areaLen + bladeWidth) / denomLen);
+            const rows = Math.floor((areaWid + bladeWidth) / denomWid);
+
+            if (cols <= 0 || rows <= 0) return pieces;
+
+            let idx = 0;
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = offsetX + col * (pieceLen + bladeWidth);
+                    const y = offsetY + row * (pieceWid + bladeWidth);
+                    if (x + pieceLen <= offsetX + areaLen + 1e-9 && y + pieceWid <= offsetY + areaWid + 1e-9) {
+                        pieces.push({
+                            x: Math.round(x * 100) / 100,
+                            y: Math.round(y * 100) / 100,
+                            w: pieceLen,
+                            h: pieceWid,
+                            rotated: rotated,
+                            scheme: schemeTag,
+                            idx: idx++
+                        });
+                    }
+                }
+            }
+            return pieces;
+        }
+
+        function calculateForwardMixed(boardLen, boardWid, pieceLen, pieceWid, bladeWidth) {
+            // Main area: forward arrangement
+            const mainPieces = fitPieces(boardLen, boardWid, pieceLen, pieceWid, 0, 0, false, 'main', bladeWidth);
+            if (mainPieces.length === 0) return mainPieces;
+
+            const maxX = Math.max(...mainPieces.map(p => p.x + p.w));
+            const maxY = Math.max(...mainPieces.map(p => p.y + p.h));
+
+            const additional = [];
+
+            // Right strip
+            const rightLen = boardLen - maxX;
+            const rightWid = maxY;
+            if (rightLen > 0 && rightWid > 0) {
+                additional.push(...fitPieces(rightLen, rightWid, pieceWid, pieceLen, maxX, 0, true, 'fill', bladeWidth));
+            }
+
+            // Top area
+            const topLen = boardLen;
+            const topWid = boardWid - maxY;
+            if (topLen > 0 && topWid > 0) {
+                additional.push(...fitPieces(topLen, topWid, pieceWid, pieceLen, 0, maxY, true, 'fill', bladeWidth));
+            }
+
+            return [...mainPieces, ...additional];
+        }
+
+        function calculateRotatedMixed(boardLen, boardWid, pieceLen, pieceWid, bladeWidth) {
+            // Main area: rotated arrangement
+            const mainPieces = fitPieces(boardLen, boardWid, pieceWid, pieceLen, 0, 0, true, 'main', bladeWidth);
+            if (mainPieces.length === 0) return mainPieces;
+
+            const maxX = Math.max(...mainPieces.map(p => p.x + p.w));
+            const maxY = Math.max(...mainPieces.map(p => p.y + p.h));
+
+            const additional = [];
+
+            // Right strip
+            const rightLen = boardLen - maxX;
+            const rightWid = maxY;
+            if (rightLen > 0 && rightWid > 0) {
+                additional.push(...fitPieces(rightLen, rightWid, pieceLen, pieceWid, maxX, 0, false, 'fill', bladeWidth));
+            }
+
+            // Top area
+            const topLen = boardLen;
+            const topWid = boardWid - maxY;
+            if (topLen > 0 && topWid > 0) {
+                additional.push(...fitPieces(topLen, topWid, pieceLen, pieceWid, 0, maxY, false, 'fill', bladeWidth));
+            }
+
+            return [...mainPieces, ...additional];
+        }
+
+        function calculatePureForward(boardLen, boardWid, pieceLen, pieceWid, bladeWidth) {
+            return fitPieces(boardLen, boardWid, pieceLen, pieceWid, 0, 0, false, 'main', bladeWidth);
+        }
+
+        function calculatePureRotated(boardLen, boardWid, pieceLen, pieceWid, bladeWidth) {
+            return fitPieces(boardLen, boardWid, pieceWid, pieceLen, 0, 0, true, 'main', bladeWidth);
+        }
+
+        function getStats(pieces, boardLen, boardWid, pieceLen, pieceWid) {
+            const pieceCount = pieces.length;
+            const boardArea = boardLen * boardWid;
+            const pieceArea = pieceLen * pieceWid;
+            const totalPieceArea = pieceCount * pieceArea;
+            const utilization = boardArea > 0 ? (totalPieceArea / boardArea) * 100 : 0;
+            const mainCount = pieces.filter(p => p.scheme === 'main').length;
+            const fillCount = pieces.filter(p => p.scheme === 'fill').length;
+            return { pieceCount, mainCount, fillCount, boardArea, totalPieceArea, utilization };
+        }
+
+        function calculateCosts(pieces, boardPrice, processingFee, density, thickness, pieceLen, pieceWid) {
+            const pieceCount = pieces.length;
+            const materialCostPerPiece = pieceCount > 0 ? boardPrice / pieceCount : 0;
+            const totalCostPerPiece = materialCostPerPiece + processingFee;
+
+            const lengthCm = pieceLen / 100;
+            const widthCm = pieceWid / 100;
+            const thicknessCm = thickness / 10;
+            const volumeCm3 = lengthCm * widthCm * thicknessCm;
+            const weightPerPiece = (volumeCm3 * density) / 1000;
+
+            return {
+                pieceCount,
+                materialCostPerPiece,
+                processingFee,
+                totalCostPerPiece,
+                weightPerPiece,
+                totalWeight: weightPerPiece * pieceCount
+            };
+        }
+
+        // ===================================================================
+        // Visualization
+        // ===================================================================
+
+        let currentPieces = [];
+        let currentScheme = 'forwardMixed';
+
+        function drawLayout(pieces, boardLen, boardWid, pieceLen, pieceWid, title, showLabels) {
+            const canvas = document.getElementById('layoutCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Calculate scale to fit canvas
+            const padding = 60;
+            const availW = canvas.width - padding * 2;
+            const availH = canvas.height - padding * 2;
+            const scaleX = availW / boardLen;
+            const scaleY = availH / boardWid;
+            const scale = Math.min(scaleX, scaleY);
+
+            const offsetX = (canvas.width - boardLen * scale) / 2;
+            const offsetY = (canvas.height - boardWid * scale) / 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Board outline
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(offsetX, offsetY, boardLen * scale, boardWid * scale);
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(offsetX, offsetY, boardLen * scale, boardWid * scale);
+
+            // Draw pieces
+            const colors = {
+                main: { fill: 'rgba(74, 144, 217, 0.75)', stroke: '#2E5A8C' },
+                fill: { fill: 'rgba(155, 89, 182, 0.75)', stroke: '#6C3483' }
+            };
+
+            pieces.forEach((piece, i) => {
+                const color = colors[piece.scheme] || colors.main;
+                const px = offsetX + piece.x * scale;
+                const py = offsetY + piece.y * scale;
+                const pw = piece.w * scale;
+                const ph = piece.h * scale;
+
+                ctx.fillStyle = color.fill;
+                ctx.fillRect(px, py, pw, ph);
+                ctx.strokeStyle = color.stroke;
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(px, py, pw, ph);
+
+                // Label
+                if (showLabels && pw > 25 && ph > 20) {
+                    const fontSize = Math.min(12, Math.max(7, Math.min(pw, ph) / 8));
+                    ctx.font = `bold ${fontSize}px Arial`;
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    let label = String(i + 1);
+                    if (piece.rotated) label += '*';
+                    ctx.fillText(label, px + pw / 2, py + ph / 2);
+                }
+            });
+
+            // Dimensions
+            ctx.font = 'bold 12px Arial';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${boardLen.toFixed(0)} mm`, offsetX + boardLen * scale / 2, offsetY + boardWid * scale + 30);
+
+            ctx.save();
+            ctx.translate(offsetX - 30, offsetY + boardWid * scale / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(`${boardWid.toFixed(0)} mm`, 0, 0);
+            ctx.restore();
+
+            // Title
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#1E3A5F';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, canvas.width / 2, 25);
+        }
+
+        // ===================================================================
+        // UI Logic
+        // ===================================================================
+
+        let lastResults = {};
+
+        function calculate() {
+            const boardLen = parseFloat(document.getElementById('boardLength').value) || 1220;
+            const boardWid = parseFloat(document.getElementById('boardWidth').value) || 914;
+            const boardPrice = parseFloat(document.getElementById('boardPrice').value) || 8;
+            const density = parseFloat(document.getElementById('density').value) || 0.97;
+            const thickness = parseFloat(document.getElementById('thickness').value) || 0.9;
+            const pieceLen = parseFloat(document.getElementById('pieceLength').value) || 258;
+            const pieceWid = parseFloat(document.getElementById('pieceWidth').value) || 128;
+            const processingFee = parseFloat(document.getElementById('processingFee').value) || 0.03;
+            const bladeWidth = parseFloat(document.getElementById('bladeWidth').value) || 0;
+            const showAll = document.getElementById('showAllSchemes').checked;
+            const showLabels = document.getElementById('showLabels').checked;
+
+            // Calculate all schemes
+            const piecesFM = calculateForwardMixed(boardLen, boardWid, pieceLen, pieceWid, bladeWidth);
+            const piecesRM = calculateRotatedMixed(boardLen, boardWid, pieceLen, pieceWid, bladeWidth);
+            const piecesPF = calculatePureForward(boardLen, boardWid, pieceLen, pieceWid, bladeWidth);
+            const piecesPR = calculatePureRotated(boardLen, boardWid, pieceLen, pieceWid, bladeWidth);
+
+            const statsFM = getStats(piecesFM, boardLen, boardWid, pieceLen, pieceWid);
+            const statsRM = getStats(piecesRM, boardLen, boardWid, pieceLen, pieceWid);
+            const statsPF = getStats(piecesPF, boardLen, boardWid, pieceLen, pieceWid);
+            const statsPR = getStats(piecesPR, boardLen, boardWid, pieceLen, pieceWid);
+
+            const costsFM = calculateCosts(piecesFM, boardPrice, processingFee, density, thickness, pieceLen, pieceWid);
+            const costsRM = calculateCosts(piecesRM, boardPrice, processingFee, density, thickness, pieceLen, pieceWid);
+            const costsPF = calculateCosts(piecesPF, boardPrice, processingFee, density, thickness, pieceLen, pieceWid);
+            const costsPR = calculateCosts(piecesPR, boardPrice, processingFee, density, thickness, pieceLen, pieceWid);
+
+            // Find best
+            let allSchemes = [
+                { name: '正向混合', count: statsFM.pieceCount, costs: costsFM, stats: statsFM, pieces: piecesFM },
+                { name: '旋转混合', count: statsRM.pieceCount, costs: costsRM, stats: statsRM, pieces: piecesRM },
+            ];
+            if (showAll) {
+                allSchemes.push({ name: '纯正向', count: statsPF.pieceCount, costs: costsPF, stats: statsPF, pieces: piecesPF });
+                allSchemes.push({ name: '纯旋转', count: statsPR.pieceCount, costs: costsPR, stats: statsPR, pieces: piecesPR });
+            }
+            const best = allSchemes.reduce((a, b) => a.count > b.count ? a : b);
+
+            lastResults = { forwardMixed: piecesFM, rotatedMixed: piecesRM, pureForward: piecesPF, pureRotated: piecesPR };
+
+            // Update metrics
+            document.getElementById('bestCount').textContent = best.count + ' 片';
+            document.getElementById('bestCost').textContent = '¥' + best.costs.totalCostPerPiece.toFixed(4);
+            document.getElementById('bestWeight').textContent = best.costs.weightPerPiece.toFixed(4) + ' kg';
+            document.getElementById('bestUtil').textContent = best.stats.utilization.toFixed(2) + '%';
+
+            // Update table
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = allSchemes.map(s => {
+                const isBest = s.name === best.name;
+                const arrangement = s.name === '正向混合' ? `${pieceLen.toFixed(0)}×${pieceWid.toFixed(0)} + 旋转填充` :
+                                   s.name === '旋转混合' ? `${pieceWid.toFixed(0)}×${pieceLen.toFixed(0)}(旋转) + 正向填充` :
+                                   s.name === '纯正向' ? `${pieceLen.toFixed(0)}×${pieceWid.toFixed(0)} (不旋转)` :
+                                   `${pieceWid.toFixed(0)}×${pieceLen.toFixed(0)} (旋转90°)`;
+                const mainFill = s.stats.fillCount > 0 ? `${s.stats.mainCount}/${s.stats.fillCount}` : `${s.stats.mainCount}/0`;
+                return `
+                    <tr class="${isBest ? 'best-row' : ''}">
+                        <td>${s.name} ${isBest ? '<span class="badge badge-success">最优</span>' : ''}</td>
+                        <td>${s.count}</td>
+                        <td>${mainFill}</td>
+                        <td>${arrangement}</td>
+                        <td>¥${s.costs.materialCostPerPiece.toFixed(4)}</td>
+                        <td>¥${s.costs.totalCostPerPiece.toFixed(4)}</td>
+                        <td>${s.costs.weightPerPiece.toFixed(4)} kg</td>
+                        <td>${s.stats.utilization.toFixed(2)}%</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update tabs
+            updateTabs(showAll);
+
+            // Draw initial layout
+            currentPieces = piecesFM;
+            currentScheme = 'forwardMixed';
+            drawLayout(piecesFM, boardLen, boardWid, pieceLen, pieceWid, '正向混合 — 裁片 ' + pieceLen + '×' + pieceWid + ' + 旋转填充', showLabels);
+            updateVizDetails(piecesFM, statsFM, costsFM, '正向混合', pieceLen, pieceWid, best.name === '正向混合');
+
+            // Store for tab switching
+            window._boardParams = { boardLen, boardWid, pieceLen, pieceWid, showLabels };
+            window._allStats = { forwardMixed: statsFM, rotatedMixed: statsRM, pureForward: statsPF, pureRotated: statsPR };
+            window._allCosts = { forwardMixed: costsFM, rotatedMixed: costsRM, pureForward: costsPF, pureRotated: costsPR };
+            window._bestName = best.name;
+        }
+
+        function updateTabs(showAll) {
+            const tabsContainer = document.getElementById('vizTabs');
+            let html = '<button class="viz-tab active" data-scheme="forwardMixed">正向混合</button>';
+            html += '<button class="viz-tab" data-scheme="rotatedMixed">旋转混合</button>';
+            if (showAll) {
+                html += '<button class="viz-tab" data-scheme="pureForward">纯正向</button>';
+                html += '<button class="viz-tab" data-scheme="pureRotated">纯旋转</button>';
+            }
+            tabsContainer.innerHTML = html;
+
+            // Re-attach click handlers
+            tabsContainer.querySelectorAll('.viz-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabsContainer.querySelectorAll('.viz-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    switchScheme(this.dataset.scheme);
+                });
+            });
+        }
+
+        function switchScheme(scheme) {
+            currentScheme = scheme;
+            const pieces = lastResults[scheme];
+            if (!pieces || !window._boardParams) return;
+
+            const { boardLen, boardWid, pieceLen, pieceWid, showLabels } = window._boardParams;
+            const stats = window._allStats[scheme];
+            const costs = window._allCosts[scheme];
+            const isBest = window._bestName === scheme;
+
+            const titles = {
+                forwardMixed: `正向混合 — 裁片 ${pieceLen}×${pieceWid} + 旋转填充`,
+                rotatedMixed: `旋转混合 — 裁片 ${pieceWid}×${pieceLen}(旋转) + 正向填充`,
+                pureForward: `纯正向 — 裁片 ${pieceLen}×${pieceWid} (不旋转)`,
+                pureRotated: `纯旋转 — 裁片 ${pieceWid}×${pieceLen} (旋转90°)`
+            };
+            const names = {
+                forwardMixed: '正向混合',
+                rotatedMixed: '旋转混合',
+                pureForward: '纯正向',
+                pureRotated: '纯旋转'
+            };
+
+            drawLayout(pieces, boardLen, boardWid, pieceLen, pieceWid, titles[scheme], showLabels);
+            updateVizDetails(pieces, stats, costs, names[scheme], pieceLen, pieceWid, isBest);
+        }
+
+        function updateVizDetails(pieces, stats, costs, name, pieceLen, pieceWid, isBest) {
+            const container = document.getElementById('vizDetails');
+            const badge = isBest ? '<span class="badge badge-success">✓ 最优方案</span>' : '';
+            container.innerHTML = `
+                <h4>${name} 详情 ${badge}</h4>
+                <p><strong>裁片总数:</strong> ${pieces.length} 片</p>
+                ${stats.fillCount > 0 ? `<p>  - 主区域: ${stats.mainCount} 片</p><p>  - 填充区: ${stats.fillCount} 片</p>` : ''}
+                <p><strong>利用率:</strong> ${stats.utilization.toFixed(2)}%</p>
+                <p><strong>材料成本/片:</strong> ¥${costs.materialCostPerPiece.toFixed(4)}</p>
+                <p><strong>总成本/片:</strong> ¥${costs.totalCostPerPiece.toFixed(4)}</p>
+                <p><strong>每片重量:</strong> ${costs.weightPerPiece.toFixed(4)} kg</p>
+            `;
+        }
+
+        // Auto-calculate on page load
+        window.addEventListener('DOMContentLoaded', calculate);
+
+        // Listen for input changes to auto-recalculate
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('change', calculate);
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', calculate);
+        });
+    </script>
+
+
+</body></html>
